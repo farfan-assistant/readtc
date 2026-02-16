@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Read T&C — Settings</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #0f0f0f;
+      --bg-card: #1a1a1a;
+      --text: #e5e5e5;
+      --text-muted: #888;
+      --accent: #3b82f6;
+      --accent-hover: #2563eb;
+      --green: #22c55e;
+      --border: #2a2a2a;
+      --radius: 8px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      display: flex;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 480px;
+      width: 100%;
+    }
+
+    h1 {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      margin-bottom: 32px;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+
+    .card h2 {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px 12px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--accent);
+    }
+
+    .field { margin-bottom: 16px; }
+    .field:last-child { margin-bottom: 0; }
+
+    .help {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .help a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+    .help a:hover { text-decoration: underline; }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 10px 20px;
+      border-radius: var(--radius);
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.15s;
+      width: 100%;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+    }
+    .btn-primary:hover { background: var(--accent-hover); }
+
+    .saved {
+      text-align: center;
+      color: var(--green);
+      font-weight: 500;
+      margin-top: 12px;
+      display: none;
+    }
+
+    .saved.show { display: block; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📜 Read T&C Settings</h1>
+    <p class="subtitle">Configure your AI-powered legal document analyzer</p>
+
+    <div class="card">
+      <h2>🔑 API Configuration</h2>
+
+      <div class="field">
+        <label>OpenAI API Key</label>
+        <input type="password" id="apiKey" placeholder="sk-..." autocomplete="off">
+        <p class="help">Get your key at <a href="https://platform.openai.com/api-keys" target="_blank">platform.openai.com/api-keys</a></p>
+      </div>
+
+      <div class="field">
+        <label>Model</label>
+        <select id="model">
+          <option value="gpt-4o-mini">GPT-4o Mini (fast, cheap)</option>
+          <option value="gpt-4o">GPT-4o (best quality)</option>
+          <option value="gpt-3.5-turbo">GPT-3.5 Turbo (fastest)</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>API Base URL</label>
+        <input type="url" id="baseUrl" placeholder="https://api.openai.com/v1">
+        <p class="help">Change this to use OpenRouter, local models, or other OpenAI-compatible APIs</p>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" id="saveBtn">Save Settings</button>
+    <p class="saved" id="savedMsg">✅ Settings saved!</p>
+  </div>
+
+  <script src="options.js"></script>
+</body>
+</html>

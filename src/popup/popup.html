@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Read T&C</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Header -->
+    <div class="header">
+      <div class="logo">
+        <span class="logo-icon">📜</span>
+        <span class="logo-text">Read T&C</span>
+      </div>
+      <button id="settingsBtn" class="icon-btn" title="Settings">⚙️</button>
+    </div>
+
+    <!-- States -->
+    <div id="state-no-key" class="state hidden">
+      <div class="empty-state">
+        <span class="empty-icon">🔑</span>
+        <p>Add your OpenAI API key to get started</p>
+        <button id="openSettings" class="btn btn-primary">Set Up API Key</button>
+      </div>
+    </div>
+
+    <div id="state-idle" class="state hidden">
+      <div class="page-info">
+        <p class="page-title" id="pageTitle"></p>
+        <p class="page-url" id="pageUrl"></p>
+      </div>
+      <button id="analyzeBtn" class="btn btn-primary btn-large">
+        <span class="btn-icon">🔍</span>
+        Analyze This Page
+      </button>
+      <p class="hint" id="detectionHint"></p>
+    </div>
+
+    <div id="state-loading" class="state hidden">
+      <div class="loading">
+        <div class="spinner"></div>
+        <p>Reading the fine print...</p>
+        <p class="loading-sub" id="loadingStatus">Extracting text...</p>
+      </div>
+    </div>
+
+    <div id="state-result" class="state hidden">
+      <div class="result-header">
+        <div class="risk-badge" id="riskBadge"></div>
+        <p class="result-title" id="resultTitle"></p>
+      </div>
+
+      <!-- Summary -->
+      <div class="section">
+        <h3>📋 Summary</h3>
+        <p id="summaryText"></p>
+      </div>
+
+      <!-- Red Flags -->
+      <div class="section" id="redFlagsSection">
+        <h3>🚩 Red Flags</h3>
+        <ul id="redFlagsList"></ul>
+      </div>
+
+      <!-- Key Points -->
+      <div class="section" id="keyPointsSection">
+        <h3>📌 Key Points</h3>
+        <div id="keyPointsGrid"></div>
+      </div>
+
+      <!-- Your Rights -->
+      <div class="section" id="rightsSection">
+        <h3>⚖️ Your Rights</h3>
+        <ul id="rightsList"></ul>
+      </div>
+
+      <!-- Data Usage -->
+      <div class="section" id="dataSection">
+        <h3>🔒 Data & Privacy</h3>
+        <ul id="dataList"></ul>
+      </div>
+
+      <!-- Costs -->
+      <div class="section" id="costsSection">
+        <h3>💰 Costs & Cancellation</h3>
+        <ul id="costsList"></ul>
+      </div>
+
+      <div class="actions">
+        <button id="reanalyzeBtn" class="btn btn-secondary">Re-analyze</button>
+        <button id="copyBtn" class="btn btn-secondary">📋 Copy</button>
+      </div>
+    </div>
+
+    <div id="state-error" class="state hidden">
+      <div class="error">
+        <span class="error-icon">⚠️</span>
+        <p id="errorMessage"></p>
+        <button id="retryBtn" class="btn btn-primary">Try Again</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
