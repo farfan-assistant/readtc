@@ -5,7 +5,9 @@
   "description": "Instantly understand Terms & Conditions, Privacy Policies, and legal documents. AI-powered plain-English summaries with red flag detection.",
   "permissions": [
     "activeTab",
-    "storage"
+    "storage",
+    "contextMenus",
+    "scripting"
   ],
   "action": {
     "default_popup": "src/popup/popup.html",
@@ -33,5 +35,14 @@
   "options_ui": {
     "page": "src/options/options.html",
     "open_in_tab": true
+  },
+  "commands": {
+    "analyze-page": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+T",
+        "mac": "Command+Shift+T"
+      },
+      "description": "Analyze current page with Read T&C"
+    }
   }
 }
