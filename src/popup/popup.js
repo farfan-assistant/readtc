@@ -56,6 +56,19 @@
       return;
     }
 
+    // Check for pending selection analysis (from context menu)
+    const url = new URL(window.location.href);
+    if (url.searchParams.get('selection') === 'true') {
+      const { pendingAnalysis } = await chrome.storage.session.get('pendingAnalysis');
+      if (pendingAnalysis?.text) {
+        await chrome.storage.session.remove('pendingAnalysis');
+        showState('loading');
+        els.loadingStatus.textContent = 'Analyzing selected text...';
+        await analyzeText(pendingAnalysis);
+        return;
+      }
+    }
+
     // Get current tab info
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 
@@ -83,6 +96,58 @@
     showState('idle');
   }
 
+  // Core analysis function (takes pageData object)
+  async function analyzeText(pageData) {
+    try {
+      els.loadingStatus.textContent = `Analyzing ${Math.round(pageData.charCount || pageData.text.length / 1000)}k characters...`;
+
+      const { apiKey, model, baseUrl } = await chrome.storage.sync.get({
+        apiKey: '',
+        model: 'gpt-4o-mini',
+        baseUrl: 'https://api.openai.com/v1',
+      });
+
+      const truncatedText = pageData.text.substring(0, 60000);
+
+      const response = await fetch(`${baseUrl}/chat/completions`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({
+          model: model,
+          messages: [
+            {
+              role: 'system',
+              content: SYSTEM_PROMPT,
+            },
+            {
+              role: 'user',
+              content: `Analyze this legal document from ${pageData.url || 'unknown'}:\n\nTitle: ${pageData.title || 'Unknown'}\n\n${truncatedText}`,
+            },
+          ],
+          temperature: 0.3,
+          response_format: { type: 'json_object' },
+        }),
+      });
+
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({}));
+        throw new Error(err.error?.message || `API error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const result = JSON.parse(data.choices[0].message.content);
+
+      lastResult = result;
+      renderResult(result, pageData.title);
+    } catch (err) {
+      showState('error');
+      els.errorMessage.textContent = err.message;
+    }
+  }
+
   // Analyze the page
   async function analyze() {
     showState('loading');
@@ -108,50 +173,8 @@
         throw new Error('Could not extract enough text from this page. Try a page with Terms & Conditions or a Privacy Policy.');
       }
 
-      els.loadingStatus.textContent = `Analyzing ${Math.round(pageData.charCount / 1000)}k characters...`;
-
-      // Call OpenAI
-      const { apiKey, model, baseUrl } = await chrome.storage.sync.get({
-        apiKey: '',
-        model: 'gpt-4o-mini',
-        baseUrl: 'https://api.openai.com/v1',
-      });
-
-      const truncatedText = pageData.text.substring(0, 60000);
-
-      const response = await fetch(`${baseUrl}/chat/completions`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${apiKey}`,
-        },
-        body: JSON.stringify({
-          model: model,
-          messages: [
-            {
-              role: 'system',
-              content: SYSTEM_PROMPT,
-            },
-            {
-              role: 'user',
-              content: `Analyze this legal document from ${pageData.url}:\n\nTitle: ${pageData.title || 'Unknown'}\n\n${truncatedText}`,
-            },
-          ],
-          temperature: 0.3,
-          response_format: { type: 'json_object' },
-        }),
-      });
-
-      if (!response.ok) {
-        const err = await response.json().catch(() => ({}));
-        throw new Error(err.error?.message || `API error: ${response.status}`);
-      }
-
-      const data = await response.json();
-      const result = JSON.parse(data.choices[0].message.content);
-
-      lastResult = result;
-      renderResult(result, pageData.title);
+      showState('loading');
+      await analyzeText(pageData);
     } catch (err) {
       showState('error');
       els.errorMessage.textContent = err.message;
